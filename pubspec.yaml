@@ -53,6 +53,7 @@ flutter:
   # assets:
   assets:
     - assets/images/Logo.png
+    - assets/images/back.jpg
   #  - images/a_dot_burr.jpeg
   #  - images/a_dot_ham.jpeg
 

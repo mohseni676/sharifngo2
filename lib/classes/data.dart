@@ -6,6 +6,8 @@ class searchData{
   String LiveCity='';
   bool isSeyed=true;
   bool isNotSeyed=true;
+  int fromAge=0;
+  int toAge=100;
 }
 
 class Kids {

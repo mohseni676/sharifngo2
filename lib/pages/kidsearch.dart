@@ -19,11 +19,13 @@ class kids extends StatefulWidget{
 
 class kidsState extends State<kids> {
   searchData _searchData=new searchData();
-  static const List<String> stateOf=['بد سرپرست','بیماری سرپرست','فوت سرپرست'];
+  static const List<String> stateOf=['همه','بد سرپرست','بیماری سرپرست','فوت سرپرست','بیماری'];
   TextEditingController kidFname=new TextEditingController();
   TextEditingController kidLname=new TextEditingController();
   TextEditingController kidCity=new TextEditingController();
   TextEditingController kidBCity=new TextEditingController();
+  TextEditingController kidFromAge=new TextEditingController();
+  TextEditingController kidToAge=new TextEditingController();
   String kidState=stateOf[0];
   bool kidIsSeyed=true;
 
@@ -32,7 +34,9 @@ class kidsState extends State<kids> {
   List<DropdownMenuItem> listState=[
     new DropdownMenuItem(child: new Container(width: 165.0,padding: EdgeInsets.all(2.0),child: new Text(stateOf[0]),),value: stateOf[0],),
     new DropdownMenuItem(child: new Container(width: 165.0,padding: EdgeInsets.all(2.0),child: new Text(stateOf[1]),),value: stateOf[1],),
-    new DropdownMenuItem(child: new Container(width: 165.0,padding: EdgeInsets.all(2.0),child: new Text(stateOf[2]),),value: stateOf[2],)
+    new DropdownMenuItem(child: new Container(width: 165.0,padding: EdgeInsets.all(2.0),child: new Text(stateOf[2]),),value: stateOf[2],),
+    new DropdownMenuItem(child: new Container(width: 165.0,padding: EdgeInsets.all(2.0),child: new Text(stateOf[3]),),value: stateOf[3],),
+    new DropdownMenuItem(child: new Container(width: 165.0,padding: EdgeInsets.all(2.0),child: new Text(stateOf[4]),),value: stateOf[4],)
   ];
   void _value1Changed  (bool value) async => setState(() {
     kidIsSeyed = value;
@@ -62,8 +66,16 @@ class kidsState extends State<kids> {
       _searchData.LastName=kidLname.text;
       _searchData.BirthCity=kidBCity.text;
       _searchData.LiveCity=kidCity.text;
+
+      _searchData.State=kidState;
+      if (kidState=='همه')
+        _searchData.State='';
       _searchData.isSeyed=kidIsSeyed;
       _searchData.isNotSeyed=kidIsNotSeyed;
+      if (kidFromAge.text.isNotEmpty )
+      _searchData.fromAge=int.parse(kidFromAge.text);
+      if (kidToAge.text.isNotEmpty)
+      _searchData.toAge=int.parse(kidToAge.text);
       Navigator.of(context).push(MaterialPageRoute(builder: (context)=>ss.kisResults(_searchData)));
     },
       backgroundColor: Colors.redAccent,
@@ -204,7 +216,26 @@ class kidsState extends State<kids> {
                       });
                     }),
 
-              )
+              ),
+              new SizedBox(height: 3.0,),
+              new TextField(
+                controller: kidFromAge,
+                keyboardType: TextInputType.numberWithOptions(decimal: true,signed: false),
+                decoration: InputDecoration(hintText: 'از سن',prefixIcon: Icon(Icons.calendar_today),
+                    border: OutlineInputBorder(borderSide: BorderSide())
+                ),
+
+              ),
+              new SizedBox(height: 3.0,),
+              new TextField(
+                controller: kidToAge,
+                keyboardType: TextInputType.numberWithOptions(decimal: true,signed: false),
+                decoration: InputDecoration(hintText: 'تا سن',prefixIcon: Icon(Icons.calendar_today),
+                    border: OutlineInputBorder(borderSide: BorderSide())
+                ),
+
+              ),
+
 
 
 

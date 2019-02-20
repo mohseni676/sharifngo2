@@ -18,7 +18,7 @@ class homeState extends State<home> {
 
   GlobalKey<ScaffoldState> _globalKey=new GlobalKey();
   void _getUserInfo(String token) async{
-    var response=await http.get('http://soft.sharifngo.com:8020/api/user',
+    var response=await http.get('${globals.serverUrl}/api/user',
     headers: {
       'Accept':'application/json',
       'Authorization': 'Bearer $token'
@@ -88,11 +88,36 @@ class homeState extends State<home> {
     _getUserInfo(globals.token);
     super.initState();
   }
+  Future<bool> _onWillPop() {
+    return
+      showDialog(
+      context: context,
+      builder: (context) =>
+          new Directionality(textDirection: TextDirection.rtl,
+              child:       new AlertDialog(
+                title: new Text('خروج از نرم افزار'),
+                content: new Text('آیا می خواهید از نرم افزار خارج شوید؟'),
+                actions: <Widget>[
+                  new FlatButton(
+                    onPressed: () => Navigator.of(context).pop(false),
+                    child: new Text('خیر'),
+                  ),
+                  new FlatButton(
+                    onPressed: () => Navigator.of(context).pop(true),
+                    child: new Text('بلی'),
+                  ),
+                ],
+              ),
+          )
+    ) ?? false;
+  }
 
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return new Directionality(textDirection: TextDirection.rtl,
+    return new WillPopScope(
+      onWillPop: _onWillPop,
+    child: new Directionality(textDirection: TextDirection.rtl,
           child: new Scaffold(
             key: _globalKey,
             appBar: new AppBar(
@@ -113,9 +138,25 @@ class homeState extends State<home> {
                 ),
               )
             ),
-            body: new Center(
-              child: new RaisedButton(onPressed:()=> Navigator.of(context).push(MaterialPageRoute(builder: (context)=>new kids()))),
+            body: new Container(
+              padding: EdgeInsets.all(15.0),
+              height: double.maxFinite,
+              width: double.maxFinite,
+              decoration: BoxDecoration(
+                image: DecorationImage(image: AssetImage('assets/images/back.jpg'),fit: BoxFit.cover)
+              ),
+              child: new Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  new SizedBox(height: 15.0,),
+                  new Hero(tag: 'name', child: new Icon(Icons.person,size: 65.0,color: Colors.black45,),),
+                  new Text(globals.madadkarFname+' '+globals.madadkarLname,textScaleFactor: 2.0,
+
+                    style:TextStyle(color: Colors.white70) ,)
+                ],
+              ),
+
             ),
-          ));
+          )));
   }
 }

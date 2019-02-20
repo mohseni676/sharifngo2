@@ -50,7 +50,7 @@ class programState extends State<program> {
       _inProgress=true;
     });
     var response=await http.post(
-        'http://soft.sharifngo.com:8020/token',
+        '${globals.serverUrl}/token',
         body: {
           'username':_userName.text,
           'password':_passWord.text,

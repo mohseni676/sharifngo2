@@ -25,10 +25,11 @@ class kidsState extends State<kisResults> {
   kidsState(this.inputData);
 
   Future<Kids> _getKidsList (searchData inputData)async{
-    var response=await http.post('http://soft.sharifngo.com:8020/api/madadjou',
+    var response=await http.post('${globals.serverUrl}/api/madadjou',
         headers: {
           'Accept':'application/json',
-          'Authorization': 'Bearer ${globals.token}'
+          'Authorization': 'Bearer ${globals.token}',
+          'Content-Type':'application/x-www-form-urlencoded'
         },
       body: {
       'Sharayet':inputData.State,
@@ -36,8 +37,11 @@ class kidsState extends State<kisResults> {
         'BirthCity':inputData.BirthCity,
         'FirstName':inputData.FirstName,
         'LastName':inputData.LastName,
-        'Seyed':inputData.isSeyed,
-        'noSeyed':inputData.isNotSeyed,
+        'Seyed':inputData.isSeyed.toString(),
+        'noSeyed':inputData.isNotSeyed.toString(),
+        "fromAge": inputData.fromAge.toString(),
+        "toAge": inputData.toAge.toString()
+
       }
     ).timeout(Duration(seconds: 15),
         onTimeout: (){
@@ -163,11 +167,29 @@ class kidsState extends State<kisResults> {
                           itemCount: list.length,
                             itemBuilder: (context,index){
                             return new Card(
-                              child: new Stack(
+                              margin: EdgeInsets.all(4.0),
+                              child:new Container(
+                                padding: EdgeInsets.all(8.0),
+                                //alignment: Alignment.centerRight,
+                                child: new Row(
+                                  children: <Widget>[
+                                  new Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+
                                 children: <Widget>[
-                                  new Text('${list[index].firstName} ${list[index].lastName}')
+                                new Text('نام و نام خانوادگی: ${list[index].firstName} ${list[index].lastName}'),
+                                new Text('تاریخ تولد: ${list[index].birth}'),
+                                new Text('محل تولد: ${list[index].birthPlace}'),
+                                new Text('محل سکونت: ${list[index].city}'),
+                                new Text('علت حمایت: ${list[index].statusName}'),
                                 ],
                               ),
+                                   // new Image.asset('assets/images/Logo.png'),
+                                  ],
+                                ),
+                              )
+
                             );
                             });
                       }
