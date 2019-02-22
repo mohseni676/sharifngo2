@@ -9,13 +9,10 @@ import 'package:path/path.dart' as PATH;
 import 'package:sharifngo/home.dart';
 
 import 'package:flutter/services.dart';
-import 'package:simple_permissions/simple_permissions.dart';
 
-//import 'package:http/';
 
 void main() async {
-  Permission permission;
-  //final res = await SimplePermissions.requestPermission(permission);
+
 
   runApp(new MaterialApp(
     title: 'SharifMD',
@@ -38,6 +35,8 @@ class programState extends State<program> {
   var _userName=new TextEditingController();
   var _passWord=new TextEditingController();
   bool _inProgress=false;
+  bool _isSave=false;
+  SharedPreferences preferences;
 
   GlobalKey<ScaffoldState> _globalKey=new GlobalKey();
   var _formGlobalKey=new GlobalKey<FormState>();
@@ -86,12 +85,24 @@ class programState extends State<program> {
       //debugPrint(globals.token);
       //debugPrint(globals.tokenExpireTime.toString());
 
+      if (_isSave==true)
+         {
+           _saveLoginDate()..whenComplete(()=>
 
-        Navigator.of(context).pushReplacement( MaterialPageRoute(builder: (context)=>home()));
+
+           Navigator.of(context).pushReplacement( MaterialPageRoute(builder: (context)=>home())));
+
+        }
+
+
+
+
+
+
 
 
     }else{
-      debugPrint('Error');
+      debugPrint('Error ${response.statusCode}');
       setState(() {
         _inProgress=false;
         final snackBar = SnackBar(content: Text('نام و نام کاربری اشتباه است',
@@ -114,10 +125,31 @@ class programState extends State<program> {
     }
 
   }
+
+  _loadLoginData() async{
+    SharedPreferences _prefs=await SharedPreferences.getInstance();
+    if (_prefs.getBool('isLoginSaved')){
+      setState(() {
+        _userName.text=_prefs.getString('username');
+        _passWord.text=_prefs.getString('password');
+        _isSave=_prefs.getBool('isLoginSaved');
+      });
+    }
+  }
+
+  _saveLoginDate() async{
+    SharedPreferences _prefs=await SharedPreferences.getInstance();
+    setState(() {
+      _prefs.setBool('isLoginSaved', _isSave);
+      _prefs.setString('username', _userName.text);
+      _prefs.setString('password', _passWord.text);
+    });
+  }
+
   List<Widget> _buildContex(BuildContext context){
     var content= Center(
       child: new ListView(
-        padding: EdgeInsets.only(right: 25.0, left: 25.0,top: 35.0),
+        padding: EdgeInsets.only(right: 25.0, left: 25.0,top: 15.0),
         children: <Widget>[
           new Hero(
               tag: 'Logo',
@@ -138,11 +170,12 @@ class programState extends State<program> {
                       ),
                       new TextFormField(
 
-                        controller: _userName=new TextEditingController(),
+                        controller: _userName,
                         validator: (value){
                           if(value.isEmpty)
                             return 'نام کاربری را وارد کنید';
                         },
+
                         textInputAction: TextInputAction.next,
                         decoration: InputDecoration(
                           border: OutlineInputBorder(
@@ -192,14 +225,28 @@ class programState extends State<program> {
                         },
 
                       ),
+                      new SizedBox(height: 3.0,),
+                      new Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                        new Checkbox(value: _isSave, onChanged: (val){
+                          setState(() {
+                            _isSave=!_isSave;
+                          });
+                        })  ,
+                          new Text('ذخیره اطلاعات ورود'),
+                        ],
+                      ),
 
                       new SizedBox(
                         height: 10.0,
                       ),
                       new RaisedButton(onPressed: (){
-                        if (_formGlobalKey.currentState.validate()){
+                       /* if (_formGlobalKey.currentState.validate()){
                           _checkLogin();
-                        }
+                        }*/
+                        _checkLogin();
 
                       },
                         shape: RoundedRectangleBorder(
@@ -246,6 +293,8 @@ class programState extends State<program> {
   @override
   void initState() {
     super.initState();
+    _loadLoginData();
+
   }
 
   @override
@@ -265,112 +314,6 @@ class programState extends State<program> {
             new Stack(
               children: _buildContex(context),
             )
-          /*new Center(
-            child: new ListView(
-              padding: EdgeInsets.only(right: 25.0, left: 25.0,top: 35.0),
-              children: <Widget>[
-                new Hero(
-                    tag: 'Logo',
-                    child: CircleAvatar(
-                      child: new Image.asset('assets/images/Logo.png'),
-                      backgroundColor: Colors.white70,
-                      radius: 80.0,
-                    )),
-                new Column(
-                  children: <Widget>[
-                    Form(
-                        key: _formGlobalKey,
-                        child: new Column(
-
-                      children: <Widget>[
-                        new SizedBox(
-                          height: 22.0,
-                        ),
-                        new TextFormField(
-
-                          controller: _userName=new TextEditingController(),
-                          validator: (value){
-                            if(value.isEmpty)
-                              return 'نام کاربری را وارد کنید';
-                          },
-                          textInputAction: TextInputAction.next,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(50.0),
-
-                            ),
-                            hintText: 'نام کاربری',
-                            prefixIcon: new Icon(Icons.verified_user),
-
-
-                          ),
-                          textAlign: TextAlign.center,
-                          focusNode: _userFocus,
-                          onFieldSubmitted: (fed){
-                            _userFocus.unfocus();
-                            FocusScope.of(context).requestFocus(_passFocus);
-                          },
-
-                        ),
-                        new SizedBox(
-                          height: 12.0,
-                        ),
-                        new TextFormField(
-                          controller: _passWord,
-                          validator: (value){
-                            if(value.isEmpty)
-                              return 'رمز عبور را وارد کنید';
-                          },
-                          textInputAction: TextInputAction.go,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(50.0),
-
-                            ),
-                            hintText: 'رمز عبور',
-                            prefixIcon: new Icon(Icons.vpn_key),
-
-                          ),
-                          textAlign: TextAlign.center,
-                          obscureText: true,
-                          focusNode: _passFocus,
-                          onFieldSubmitted: (fed){
-                            _passFocus.unfocus();
-                            if (_formGlobalKey.currentState.validate()){
-                              _checkLogin();
-                            }
-                          },
-
-                        ),
-
-                        new SizedBox(
-                          height: 10.0,
-                        ),
-                        new RaisedButton(onPressed: (){
-                          if (_formGlobalKey.currentState.validate()){
-                            _checkLogin();
-                          }
-
-                        },
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(25.0),
-                        ),
-                          color: Colors.green,
-                          highlightColor: Colors.red,
-                          textTheme: ButtonTextTheme.primary,
-                          padding: EdgeInsets.all(18.0),
-                          child: new Text('ورود به سیستم'),
-                        ),
-
-
-                      ],
-                    ))
-
-                  ],
-                )
-              ],
-            ),
-          ),*/
         ));
   }
 

@@ -150,7 +150,7 @@ class homeState extends State<home> {
                 children: <Widget>[
                   new SizedBox(height: 15.0,),
                   new Hero(tag: 'name', child: new Icon(Icons.person,size: 65.0,color: Colors.black45,),),
-                  new Text(globals.madadkarFname+' '+globals.madadkarLname,textScaleFactor: 2.0,
+                  new Text('${globals.madadkarFname} ${globals.madadkarLname}',textScaleFactor: 2.0,
 
                     style:TextStyle(color: Colors.white70) ,)
                 ],
